@@ -1,7 +1,7 @@
 import "react-native-get-random-values"
 import { useState } from 'react';
 import { Text, View, StyleSheet, Pressable } from 'react-native';
-import { ulid as jsiUlid } from 'react-native-ulid';
+import { ulid as jsiUlid } from 'react-native-ulid-jsi';
 import { ulid } from "ulid";
 
 

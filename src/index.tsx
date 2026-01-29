@@ -18,12 +18,13 @@ if(!RNUlidInitialized){
 export const ulid = (seedTime?: number): string => {
   return globalThis.__getUlid(seedTime);
 }
-
+//@ts-ignore
 export const isValid = (id: string): boolean => {
   // TODO: implement validation
   return true;
 }
 
+//@ts-ignore
 export const decodeTime = (id: string): number => {
   //TODO: implement decodeTime
   return 0;

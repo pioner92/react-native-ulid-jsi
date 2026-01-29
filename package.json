@@ -1,5 +1,5 @@
 {
-  "name": "react-native-ulid",
+  "name": "react-native-ulid-jsi",
   "version": "0.1.0",
   "description": "High-performance ULID generator for React Native using JSI and C++. Supports both old and new architecture on iOS and Android.",
   "main": "./lib/commonjs/index.js",
@@ -43,6 +43,7 @@
     "jsi",
     "cpp",
     "native-module",
+    "react-native-ulid-jsi",
     "react-native-ulid",
     "uuid",
     "unique-id",
@@ -58,14 +59,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pioner92/react-native-ulid.git"
+    "url": "git+https://github.com/pioner92/react-native-ulid-jsi.git"
   },
   "author": "Alex Shumihin <shumolek@gmail.com> (https://github.com/pioner92)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pioner92/react-native-ulid/issues"
+    "url": "https://github.com/pioner92/react-native-ulid-jsi/issues"
   },
-  "homepage": "https://github.com/pioner92/react-native-ulid#readme",
+  "homepage": "https://github.com/pioner92/react-native-ulid-jsi#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
@@ -101,14 +102,6 @@
     "example"
   ],
   "packageManager": "yarn@4.11.0",
-  "codegenConfig": {
-    "name": "UlidSpec",
-    "type": "modules",
-    "jsSrcsDir": "src",
-    "android": {
-      "javaPackageName": "com.ulid"
-    }
-  },
   "prettier": {
     "quoteProps": "consistent",
     "singleQuote": true,

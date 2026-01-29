@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "react-native-ulid": [
+      "react-native-ulid-jsi": [
         "./src/index"
       ]
     },

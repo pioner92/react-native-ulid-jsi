@@ -1,8 +1,8 @@
-# react-native-ulid
+# react-native-ulid-jsi
 
-[![npm version](https://img.shields.io/npm/v/react-native-ulid.svg)](https://www.npmjs.com/package/react-native-ulid)
-[![npm downloads](https://img.shields.io/npm/dm/react-native-ulid.svg)](https://www.npmjs.com/package/react-native-ulid)
-[![license](https://img.shields.io/npm/l/react-native-ulid.svg)](https://github.com/pioner92/react-native-ulid/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/react-native-ulid-jsi.svg)](https://www.npmjs.com/package/react-native-ulid-jsi)
+[![npm downloads](https://img.shields.io/npm/dm/react-native-ulid-jsi.svg)](https://www.npmjs.com/package/react-native-ulid-jsi)
+[![license](https://img.shields.io/npm/l/react-native-ulid-jsi.svg)](https://github.com/pioner92/react-native-ulid-jsi/blob/main/LICENSE)
 
 ⚡️ **Ultra-fast ULID (Universally Unique Lexicographically Sortable Identifier) generator for React Native**
 
@@ -16,14 +16,14 @@ Built with JSI (JavaScript Interface) and C++ for maximum performance. Features 
 
 | Implementation | Time (1000 iterations) | Performance |
 |---------------|----------------------|-------------|
-| **react-native-ulid (JSI/C++)** | **0.17ms** | ⚡️ **500x faster** |
+| **react-native-ulid-jsi (JSI/C++)** | **0.17ms** | ⚡️ **500x faster** |
 | Pure JavaScript (ulid package) | 83.62ms | 🐌 Baseline |
 
 ```
-react-native-ulid  ▓ 0.17ms
-JavaScript ULID    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 83.62ms
-                   └────────────────────────────────────────────────┘
-                              500x performance gain
+react-native-ulid-jsi  ▓ 0.17ms
+JavaScript ULID        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 83.62ms
+                       └────────────────────────────────────────────────┘
+                                    500x performance gain
 ```
 
 *Benchmark performed on iPhone with production build*
@@ -39,7 +39,7 @@ JavaScript ULID    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓�
 ### Run your own benchmark
 
 ```typescript
-import { ulid } from 'react-native-ulid';
+import { ulid } from 'react-native-ulid-jsi';
 
 const iterations = 1000;
 const start = performance.now();
@@ -72,13 +72,13 @@ console.log(`Generated ${iterations} ULIDs in ${(end - start).toFixed(2)}ms`);
 ## 📦 Installation
 
 ```sh
-npm install react-native-ulid
+npm install react-native-ulid-jsi
 ```
 
 or with yarn:
 
 ```sh
-yarn add react-native-ulid
+yarn add react-native-ulid-jsi
 ```
 
 ### iOS
@@ -96,7 +96,7 @@ No additional steps required. Gradle will handle everything automatically.
 ### Basic Usage
 
 ```typescript
-import { ulid } from 'react-native-ulid';
+import { ulid } from 'react-native-ulid-jsi';
 
 // Generate a new ULID
 const id = ulid();
@@ -111,7 +111,7 @@ const id3 = ulid(); // 01HGW4Z6C8ABCDEFGHIJKLMNPR (guaranteed > id2)
 ### With Seed Time
 
 ```typescript
-import { ulid } from 'react-native-ulid';
+import { ulid } from 'react-native-ulid-jsi';
 
 // Generate ULID with custom timestamp (milliseconds since epoch)
 const timestamp = Date.now();
@@ -122,7 +122,7 @@ console.log(id); // 01ARZ3NDEKTSV4RRFFQ69G5FAV
 ### Validate ULID
 
 ```typescript
-import { isValid } from 'react-native-ulid';
+import { isValid } from 'react-native-ulid-jsi';
 
 const id = '01ARZ3NDEKTSV4RRFFQ69G5FAV';
 const valid = isValid(id);
@@ -132,7 +132,7 @@ console.log(valid); // true
 ### Decode Timestamp
 
 ```typescript
-import { decodeTime } from 'react-native-ulid';
+import { decodeTime } from 'react-native-ulid-jsi';
 
 const id = '01ARZ3NDEKTSV4RRFFQ69G5FAV';
 const timestamp = decodeTime(id);
@@ -278,7 +278,7 @@ const id2 = ulid(); // 01HGW4Z6C8ABCDEFGHIJKLMNPQ  ✅ Always > id1
 
 ## 📊 Comparison with JavaScript ULID
 
-| Feature | react-native-ulid | JavaScript ULID |
+| Feature | react-native-ulid-jsi | JavaScript ULID |
 |---------|------------------|-----------------|
 | Performance | ⚡️ 0.17ms (1000 ops) | 🐌 83.62ms (1000 ops) |
 | Speed Improvement | **500x faster** | Baseline |
@@ -310,9 +310,9 @@ MIT © [Alex Shumihin](https://github.com/pioner92)
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/pioner92/react-native-ulid)
-- [npm Package](https://www.npmjs.com/package/react-native-ulid)
-- [Issues](https://github.com/pioner92/react-native-ulid/issues)
+- [GitHub Repository](https://github.com/pioner92/react-native-ulid-jsi)
+- [npm Package](https://www.npmjs.com/package/react-native-ulid-jsi)
+- [Issues](https://github.com/pioner92/react-native-ulid-jsi/issues)
 - [ULID Specification](https://github.com/ulid/spec)
 
 ## ⭐️ Show Your Support
