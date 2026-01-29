@@ -1,7 +1,7 @@
 {
   "name": "react-native-ulid",
   "version": "0.1.0",
-  "description": "the lib to generate ulid",
+  "description": "High-performance ULID generator for React Native using JSI and C++. Supports both old and new architecture on iOS and Android.",
   "main": "./lib/commonjs/index.js",
   "module": "./lib/module/index.js",
   "types": "lib/typescript/index.d.ts",
@@ -38,7 +38,23 @@
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "ulid",
+    "jsi",
+    "cpp",
+    "native-module",
+    "react-native-ulid",
+    "uuid",
+    "unique-id",
+    "identifier",
+    "turbomodule",
+    "fabric",
+    "new-architecture",
+    "old-architecture",
+    "performance",
+    "fast",
+    "native",
+    "c++"
   ],
   "repository": {
     "type": "git",

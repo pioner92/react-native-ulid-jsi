@@ -15,6 +15,17 @@ if(!RNUlidInitialized){
 }
 
 
-export const getUlid = (seedTime?: number): string => {
+export const ulid = (seedTime?: number): string => {
   return globalThis.__getUlid(seedTime);
 }
+
+export const isValid = (id: string): boolean => {
+  // TODO: implement validation
+  return true;
+}
+
+export const decodeTime = (id: string): number => {
+  //TODO: implement decodeTime
+  return 0;
+}
+

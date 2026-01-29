@@ -1,7 +1,7 @@
 import "react-native-get-random-values"
 import { useState } from 'react';
 import { Text, View, StyleSheet, Pressable } from 'react-native';
-import { getUlid } from 'react-native-ulid';
+import { ulid as jsiUlid } from 'react-native-ulid';
 import { ulid } from "ulid";
 
 
@@ -39,13 +39,13 @@ function benchmarkJS(): number {
 function benchmarkNative(): number {
 
   // warm up
-  getUlid();
-  getUlid();
+  jsiUlid();
+  jsiUlid();
 
   const start = performance.now()
 
   for (let i = 0; i < ITERATIONS; i++) {
-    const id1 = getUlid();
+    const id1 = jsiUlid();
   }
   const end = performance.now()
 
