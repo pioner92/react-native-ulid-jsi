@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "react": "19.2.0",
-    "react-native": "0.83.0"
+    "react-native": "0.83.0",
+    "react-native-get-random-values": "^2.0.0",
+    "ulid": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
