@@ -13,6 +13,7 @@
   #endif
 #endif
 
+// --------- GENERATE ULID --------//
 
 static constexpr char kEncoding[32] = {
   '0','1','2','3','4','5','6','7','8','9',
@@ -198,7 +199,16 @@ static inline void generateUlidMonotonic(uint64_t seedTimeMs, char out26[26]) {
     randomValsFrom80bits(rnd, st.lastRandVals);
   } else {
     t = st.lastTime;
-    incrementBase32Vals(st.lastRandVals);
+
+    if (!incrementBase32Vals(st.lastRandVals)) {
+      // overflow: advance time by 1ms and reseed randomness
+      st.lastTime += 1;
+      t = st.lastTime;
+
+      uint8_t rnd[10];
+      secureRandomBytes(rnd, sizeof(rnd));
+      randomValsFrom80bits(rnd, st.lastRandVals);
+    }
   }
 
   char time10[10];
@@ -210,3 +220,84 @@ static inline void generateUlidMonotonic(uint64_t seedTimeMs, char out26[26]) {
   std::memcpy(out26,  time10, 10);
   std::memcpy(out26 + 10, rand16, 16);
 }
+
+// --------- CHECK IS VALID ULID --------//
+
+static inline int8_t crockfordBase32Value(uint8_t c) noexcept {
+  static const std::array<int8_t, 256> T = [] {
+    std::array<int8_t, 256> t{};
+    t.fill(-1);
+
+    // 0-9
+    for (int i = 0; i <= 9; ++i) {
+      t[static_cast<uint8_t>('0' + i)] = static_cast<int8_t>(i);
+    }
+
+    // A-Z (Crockford without I, L, O, U)
+    t[static_cast<uint8_t>('A')] = 10; t[static_cast<uint8_t>('B')] = 11;
+    t[static_cast<uint8_t>('C')] = 12; t[static_cast<uint8_t>('D')] = 13;
+    t[static_cast<uint8_t>('E')] = 14; t[static_cast<uint8_t>('F')] = 15;
+    t[static_cast<uint8_t>('G')] = 16; t[static_cast<uint8_t>('H')] = 17;
+    t[static_cast<uint8_t>('J')] = 18; t[static_cast<uint8_t>('K')] = 19;
+    t[static_cast<uint8_t>('M')] = 20; t[static_cast<uint8_t>('N')] = 21;
+    t[static_cast<uint8_t>('P')] = 22; t[static_cast<uint8_t>('Q')] = 23;
+    t[static_cast<uint8_t>('R')] = 24; t[static_cast<uint8_t>('S')] = 25;
+    t[static_cast<uint8_t>('T')] = 26;
+    t[static_cast<uint8_t>('V')] = 27; t[static_cast<uint8_t>('W')] = 28;
+    t[static_cast<uint8_t>('X')] = 29; t[static_cast<uint8_t>('Y')] = 30;
+    t[static_cast<uint8_t>('Z')] = 31;
+
+    // lowercase = same values (case-insensitive)
+    for (int ch = 'a'; ch <= 'z'; ++ch) {
+      const int upper = ch - 32; // ASCII: 'a'->'A'
+      t[static_cast<uint8_t>(ch)] = t[static_cast<uint8_t>(upper)];
+    }
+
+    return t;
+  }();
+
+  return T[c];
+}
+
+static inline bool checkULID(const char* s, size_t len) noexcept {
+  if (len != 26) return false;
+
+  const int8_t v0 = crockfordBase32Value((uint8_t)s[0]);
+  if (v0 < 0 || v0 > 7) return false;
+
+  for (size_t i = 1; i < 26; ++i) {
+    if (crockfordBase32Value((uint8_t)s[i]) < 0) return false;
+  }
+  return true;
+}
+
+
+// --------- DECODE TIME --------//
+static inline bool decodeTime48From10(const char* s10, uint64_t& outMs) noexcept {
+  uint64_t x = 0;
+
+  // First char must be 0..7
+  const int8_t v0 = crockfordBase32Value((uint8_t)s10[0]);
+  if (v0 < 0 || v0 > 7) return false;
+
+  x = (uint64_t)v0;
+
+  // Remaining 9 chars
+  for (int i = 1; i < 10; ++i) {
+    const int8_t v = crockfordBase32Value((uint8_t)s10[i]);
+    if (v < 0) return false;
+    x = (x << 5) | (uint64_t)v;
+  }
+
+  // x is 50 bits, but top 2 bits are 0 => it equals the 48-bit ms timestamp
+  outMs = x;
+  return true;
+}
+
+
+static inline bool decodeTimeFromUlid(const char* s, size_t len, uint64_t& outMs) noexcept {
+  if (len != 26) return false;
+
+  return decodeTime48From10(s, outMs);
+}
+

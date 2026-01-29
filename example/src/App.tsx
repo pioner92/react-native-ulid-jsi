@@ -1,8 +1,8 @@
 import "react-native-get-random-values"
 import {  useState } from 'react';
 import { Text, View, StyleSheet, Pressable } from 'react-native';
-import { ulid as jsiUlid } from 'react-native-ulid-jsi';
-import { ulid } from "ulid";
+import { ulid as jsiUlid, isValid as isValidNative, decodeTime as decodeTimeNative } from 'react-native-ulid-jsi';
+import { ulid, isValid, decodeTime  } from "ulid";
 
 
 
@@ -52,6 +52,25 @@ function benchmarkNative(): number {
   return end - start
 }
 
+const testCorrectness = () => {
+  const nativeUlid = jsiUlid();
+  const jsUlid = ulid();
+
+  console.log('IS VALID', {
+    nativeCheckNative: isValidNative(nativeUlid),
+    nativeCheckJS: isValidNative(jsUlid),
+    jsCheckNative: isValid(nativeUlid),
+    jsCheckJS: isValid(jsUlid),
+  });
+
+  console.log('DECODE TIME', {
+    nativeDecodeNative: decodeTimeNative(nativeUlid),
+    nativeDecodeJS: decodeTimeNative(jsUlid),
+    jsDecodeNative: decodeTime(nativeUlid),
+    jsDecodeJS: decodeTime(jsUlid),
+  });
+}
+
 async function runBenchmarks(): Promise<BenchmarksResult> {
   console.log(`Running benchmarks ${ITERATIONS}x...`)
   await waitForGc()
@@ -62,6 +81,8 @@ async function runBenchmarks(): Promise<BenchmarksResult> {
   console.log(
     `Benchmarks finished! js: ${jsTime.toFixed(2)}ms | native JSI: ${nativeTime.toFixed(2)}ms`
   )
+
+  testCorrectness()
   return {
     jsTimeMs: jsTime,
     nativeTimeMs: nativeTime,

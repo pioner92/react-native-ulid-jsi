@@ -1,6 +1,8 @@
 import {NativeModules} from 'react-native'
 declare global {
   var __getUlid: (seedTime?:number) => string;
+  var __checkIsValid: (ulid: string) => boolean;
+  var __decodeTime: (ulid: string) => number;
 }
 
 
@@ -14,19 +16,37 @@ if(!RNUlidInitialized){
   }
 }
 
-
+/** 
+ * Generate ULID
+ * @param seedTime number (optional)
+ * @returns string
+ */
 export const ulid = (seedTime?: number): string => {
   return globalThis.__getUlid(seedTime);
 }
-//@ts-ignore
-export const isValid = (id: string): boolean => {
-  // TODO: implement validation
-  return true;
+
+/** 
+  * Validate ULID
+ * @param ulid string
+ * @returns boolean
+ */
+export const isValid = (ulid: string): boolean => {
+  if(typeof ulid !== 'string' || ulid.length !== 26){
+    return false;
+  }
+
+  return  globalThis.__checkIsValid(ulid);;
 }
 
-//@ts-ignore
-export const decodeTime = (id: string): number => {
-  //TODO: implement decodeTime
-  return 0;
+/**
+ * Decode time from ULID
+ * @param ulid string
+ * @returns number | undefined
+ */
+export const decodeTime = (ulid: string): number | undefined => {
+  if(typeof ulid !== 'string' || ulid.length !== 26){
+    return undefined;
+  }
+  return globalThis.__decodeTime(ulid);
 }
 

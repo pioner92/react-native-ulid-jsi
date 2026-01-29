@@ -13,8 +13,7 @@ void rn_ulid::install(jsi::Runtime* runtime) {
           double d = arguments[0].getNumber();
           if (d >= 0) {
             seedTime = (uint64_t)d;
-          }
-          else {
+          } else {
             seedTime = nowMs();
           }
         } else {
@@ -27,6 +26,39 @@ void rn_ulid::install(jsi::Runtime* runtime) {
         return jsi::String::createFromUtf8(runtime, (const uint8_t*)out, 26);
       });
 
+  auto checkIsValid = jsi::Function::createFromHostFunction(
+      rt, jsi::PropNameID::forAscii(rt, "__checkIsValid"), 1,
+      [](jsi::Runtime& runtime, const jsi::Value& thisValue,
+        const jsi::Value* arguments, size_t count) -> jsi::Value {
+        std::string s = arguments[0].getString(runtime).utf8(runtime);
+        return checkULID(s.data(), s.length());
+      });
+
+  auto decodeTime = jsi::Function::createFromHostFunction(
+      rt, jsi::PropNameID::forAscii(rt, "__decodeTime"), 1,
+      [](jsi::Runtime& runtime, const jsi::Value& thisValue,
+         const jsi::Value* arguments, size_t count) -> jsi::Value {
+        if (count >= 1 && arguments[0].isString()) {
+          std::string s = arguments[0].getString(runtime).utf8(runtime);
+
+          uint64_t ts = 0;
+
+          if (!decodeTimeFromUlid(s.data(), s.size(), ts)) {
+            return jsi::Value::undefined();
+          }
+
+          return jsi::Value((double)ts);
+        }
+
+        return jsi::Value::undefined();
+      });
+
   rt.global().setProperty(rt, jsi::PropNameID::forAscii(rt, "__getUlid"),
                           std::move(getUlid));
+
+  rt.global().setProperty(rt, jsi::PropNameID::forAscii(rt, "__checkIsValid"),
+                          std::move(checkIsValid));
+
+  rt.global().setProperty(rt, jsi::PropNameID::forAscii(rt, "__decodeTime"),
+                          std::move(decodeTime));
 }

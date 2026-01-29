@@ -14,6 +14,8 @@ Built with JSI (JavaScript Interface) and C++ for maximum performance. Features 
 
 **500x faster** than pure JavaScript implementations!
 
+Comparison performed against the official [ulid/javascript](https://github.com/ulid/javascript) package.
+
 | Implementation | Time (1000 iterations) | Performance |
 |---------------|----------------------|-------------|
 | **react-native-ulid-jsi (JSI/C++)** | **0.17ms** | ⚡️ **500x faster** |
