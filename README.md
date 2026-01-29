@@ -66,7 +66,8 @@ console.log(`Generated ${iterations} ULIDs in ${(end - start).toFixed(2)}ms`);
 - ⏱️ **Timestamp Encoded** - Contains creation timestamp (first 48 bits)
 - 🎲 **Cryptographically Secure** - Platform-native secure random generation
   - iOS: `SecRandomCopyBytes` (Security Framework)
-  - Android: `getrandom` syscall
+  - Android: `getrandom` syscall with `/dev/urandom` fallback (API 21+)
+  - Linux: `getrandom` syscall
 - 🔤 **Crockford's Base32** - Excludes ambiguous characters (I, L, O, U)
 
 ## 📦 Installation
@@ -266,15 +267,16 @@ const id2 = ulid(); // 01HGW4Z6C8ABCDEFGHIJKLMNPQ  ✅ Always > id1
 - **Implementation**: Pure C++ with JSI (JavaScript Interface) bindings
 - **Monotonic Generation**: Thread-local state ensures IDs increment even within same millisecond
 - **Thread Safety**: Thread-local storage per thread, no locks or mutexes needed
-- **Random Generation**:
+- **Random Generation** (with automatic fallback):
   - iOS: `SecRandomCopyBytes` (Security Framework)
-  - Android/Linux: `getrandom` syscall
-  - Fallback: `std::random_device` for other platforms
+  - Android: `syscall(__NR_getrandom)` → `/dev/urandom` fallback (API 21+)
+  - Linux: `getrandom()` syscall → `/dev/urandom` fallback
+  - Last resort: `std::random_device` (other platforms)
 - **Encoding**: Crockford's Base32 (0-9, A-Z excluding I, L, O, U)
 - **Memory**: Minimal allocation, optimized for mobile devices
 - **Dependencies**: Zero - pure C++ standard library
 - **Bundle Size**: Native module only, zero JavaScript bundle impact
-- **Platforms**: iOS 12+, Android API 21+ (getrandom support)
+- **Platforms**: iOS 12+, Android API 21+
 
 ## 📊 Comparison with JavaScript ULID
 

@@ -1,8 +1,16 @@
 #if defined(__APPLE__)
   #include <Security/SecRandom.h>
- // Android/Linux
-#elif defined(__linux__) || defined(__ANDROID__)
-  #include <sys/random.h> 
+#elif defined(__ANDROID__) || defined(__linux__)
+  #include <fcntl.h>        // open
+  #include <unistd.h>       // read, close
+  #include <errno.h>        // errno
+  // getrandom available on Android API 28+ and Linux with glibc 2.25+
+  #if defined(__ANDROID__)
+    #include <sys/syscall.h>  // syscall
+    #include <linux/random.h> // GRND_NONBLOCK
+  #else
+    #include <sys/random.h>   // getrandom
+  #endif
 #endif
 
 
@@ -22,38 +30,92 @@ static inline void secureRandomBytes(uint8_t* out, size_t len) {
   if (SecRandomCopyBytes(kSecRandomDefault, len, out) != errSecSuccess) {
     throw std::runtime_error("SecRandomCopyBytes failed");
   }
-#elif defined(__linux__) || defined(__ANDROID__)
+
+#elif defined(__ANDROID__) || defined(__linux__)
+  // 1) Try getrandom() first (Android API 28+ / Linux kernel 3.17+)
   size_t off = 0;
+  bool getrandom_ok = true;
+
   while (off < len) {
-    ssize_t r = getrandom(out + off, len - off, 0);
-    if (r <= 0) throw std::runtime_error("getrandom failed");
-    off += (size_t)r;
-  }
+#if defined(__ANDROID__)
+    // Use syscall directly for Android compatibility with older NDK
+    ssize_t r = syscall(__NR_getrandom, out + off, len - off, 0);
 #else
+    // Use getrandom() directly on Linux
+    ssize_t r = getrandom(out + off, len - off, 0);
+#endif
+    if (r > 0) {
+      off += (size_t)r;
+    } else if (errno == ENOSYS) {
+      // getrandom not available, use fallback
+      getrandom_ok = false;
+      break;
+    } else if (errno == EINTR) {
+      // Interrupted, retry
+      continue;
+    } else {
+      // Other error, use fallback
+      getrandom_ok = false;
+      break;
+    }
+  }
+
+  if (getrandom_ok) {
+    return;
+  }
+
+  // 2) Fallback: /dev/urandom (works on all Android/Linux versions)
+  int fd = open("/dev/urandom", O_RDONLY | O_CLOEXEC);
+  if (fd < 0) {
+    throw std::runtime_error("open(/dev/urandom) failed");
+  }
+
+  off = 0;
+  while (off < len) {
+    ssize_t r = read(fd, out + off, len - off);
+    if (r > 0) {
+      off += (size_t)r;
+    } else if (r == 0) {
+      close(fd);
+      throw std::runtime_error("unexpected EOF from /dev/urandom");
+    } else if (errno == EINTR) {
+      // Interrupted, retry
+      continue;
+    } else {
+      close(fd);
+      throw std::runtime_error("read(/dev/urandom) failed");
+    }
+  }
+  close(fd);
+
+#else
+  // Last-resort fallback (should never happen on React Native)
   std::random_device rd;
-  for (size_t i = 0; i < len; i++) out[i] = (uint8_t)rd();
+  for (size_t i = 0; i < len; ++i) {
+    out[i] = static_cast<uint8_t>(rd());
+  }
 #endif
 }
 
-static inline void encodeTime48To10(uint64_t ms, char out10[10]) {  
+static inline void encodeTime48To10(uint64_t ms, char out10[10]) {
     const uint8_t b0 = (uint8_t)((ms >> 40) & 0xFF);
     const uint8_t b1 = (uint8_t)((ms >> 32) & 0xFF);
     const uint8_t b2 = (uint8_t)((ms >> 24) & 0xFF);
     const uint8_t b3 = (uint8_t)((ms >> 16) & 0xFF);
     const uint8_t b4 = (uint8_t)((ms >>  8) & 0xFF);
     const uint8_t b5 = (uint8_t)((ms >>  0) & 0xFF);
-  
 
-    out10[0] = kEncoding[(b0 & 0xE0) >> 5];                         
-    out10[1] = kEncoding[(b0 & 0x1F)];                              
-    out10[2] = kEncoding[(b1 & 0xF8) >> 3];                         
-    out10[3] = kEncoding[((b1 & 0x07) << 2) | ((b2 & 0xC0) >> 6)];  
-    out10[4] = kEncoding[(b2 & 0x3E) >> 1];                         
-    out10[5] = kEncoding[((b2 & 0x01) << 4) | ((b3 & 0xF0) >> 4)];  
-    out10[6] = kEncoding[((b3 & 0x0F) << 1) | ((b4 & 0x80) >> 7)];  
-    out10[7] = kEncoding[(b4 & 0x7C) >> 2];                         
-    out10[8] = kEncoding[((b4 & 0x03) << 3) | ((b5 & 0xE0) >> 5)];  
-    out10[9] = kEncoding[(b5 & 0x1F)];                              
+
+    out10[0] = kEncoding[(b0 & 0xE0) >> 5];
+    out10[1] = kEncoding[(b0 & 0x1F)];
+    out10[2] = kEncoding[(b1 & 0xF8) >> 3];
+    out10[3] = kEncoding[((b1 & 0x07) << 2) | ((b2 & 0xC0) >> 6)];
+    out10[4] = kEncoding[(b2 & 0x3E) >> 1];
+    out10[5] = kEncoding[((b2 & 0x01) << 4) | ((b3 & 0xF0) >> 4)];
+    out10[6] = kEncoding[((b3 & 0x0F) << 1) | ((b4 & 0x80) >> 7)];
+    out10[7] = kEncoding[(b4 & 0x7C) >> 2];
+    out10[8] = kEncoding[((b4 & 0x03) << 3) | ((b5 & 0xE0) >> 5)];
+    out10[9] = kEncoding[(b5 & 0x1F)];
 }
 
 

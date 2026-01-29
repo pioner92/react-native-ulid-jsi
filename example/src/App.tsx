@@ -1,5 +1,5 @@
 import "react-native-get-random-values"
-import { useState } from 'react';
+import {  useState } from 'react';
 import { Text, View, StyleSheet, Pressable } from 'react-native';
 import { ulid as jsiUlid } from 'react-native-ulid-jsi';
 import { ulid } from "ulid";
@@ -87,9 +87,9 @@ export default function App() {
           <>
             <Text style={{ fontSize: 20 }}>ULID generations: {result?.numberOfIterations}x</Text>
             <View style={{ marginTop: 20 }}>
-              <Text style={{ fontWeight: 'bold' }}>JS: {result?.jsTimeMs.toFixed(2)}ms</Text>
-              <Text style={{ fontWeight: 'bold' }}>Native JSI: {result?.nativeTimeMs.toFixed(2)}ms</Text>
-              <Text style={{ fontWeight: 'bold' }}>
+              <Text style={{ fontWeight: 'bold', fontSize:18 }}>JS: {result?.jsTimeMs.toFixed(2)}ms</Text>
+              <Text style={{ fontWeight: 'bold', fontSize:18 }}>Native JSI: {result?.nativeTimeMs.toFixed(2)}ms</Text>
+              <Text style={{ fontWeight: 'bold', fontSize:18 }}>
                 Native is {(result!.jsTimeMs / result!.nativeTimeMs).toFixed(2)}× faster
               </Text>
             </View>
@@ -99,7 +99,7 @@ export default function App() {
         )}
 
       </View>
-      <Pressable style={{ marginTop: 20 }} onPress={runTest}><Text>Run Benchmarks</Text></Pressable>
+      <Pressable style={{ marginTop: 20 }} onPress={runTest}><Text style={{ fontSize: 18 }}>Run Benchmarks</Text></Pressable>
     </View>
   );
 }
@@ -107,6 +107,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height:'100%',
+    width:'100%',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white'
