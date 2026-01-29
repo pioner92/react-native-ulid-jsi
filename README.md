@@ -26,7 +26,7 @@ JavaScript ULID        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
                                     500x performance gain
 ```
 
-*Benchmark performed on iPhone with production build*
+*Benchmark performed on iPhone 16 Pro with production build*
 
 ### Why so fast?
 
