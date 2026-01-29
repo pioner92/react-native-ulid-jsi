@@ -8,7 +8,7 @@
 
 Built with JSI (JavaScript Interface) and C++ for maximum performance. Features **monotonic generation** with thread-local state for guaranteed ID ordering. Supports both **New Architecture (Fabric + TurboModules)** and **Old Architecture** on iOS and Android.
 
-🚀 **500x faster** than JavaScript | 🔄 **Monotonic** | 🔒 **Thread-safe** | 📦 **Zero dependencies**
+🚀 **500x faster** than JavaScript | 🔄 **Monotonic** | 📦 **Zero dependencies**
 
 ## 🚀 Performance
 
@@ -61,13 +61,11 @@ console.log(`Generated ${iterations} ULIDs in ${(end - start).toFixed(2)}ms`);
 - 📱 **Cross Platform** - iOS and Android support
 - 🎯 **Type Safe** - Full TypeScript support
 - 🪶 **Lightweight** - Zero dependencies, pure C++ implementation
-- 🔒 **Thread Safe** - Thread-local state management
 - 📈 **Monotonic Generation** - Guarantees increasing IDs even within the same millisecond
 - ⏱️ **Timestamp Encoded** - Contains creation timestamp (first 48 bits)
 - 🎲 **Cryptographically Secure** - Platform-native secure random generation
   - iOS: `SecRandomCopyBytes` (Security Framework)
-  - Android: `getrandom` syscall with `/dev/urandom` fallback (API 21+)
-  - Linux: `getrandom` syscall
+  - Android: getrandom when available, falls back to /dev/urandom
 - 🔤 **Crockford's Base32** - Excludes ambiguous characters (I, L, O, U)
 
 ## 📦 Installation
@@ -231,9 +229,8 @@ This library implements **monotonic ULID generation**, ensuring that IDs are alw
 ### How it works:
 
 1. **Same timestamp**: If multiple ULIDs are generated in the same millisecond, the random component is incremented instead of generating new random bytes
-2. **Thread-local state**: Each thread maintains its own state for optimal performance
-3. **Overflow protection**: If the random component overflows, a new random value is generated
-4. **Time progression**: When time advances, a fresh random value is used
+2. **Overflow protection**: If the random component overflows, a new random value is generated
+3. **Time progression**: When time advances, a fresh random value is used
 
 ### Why monotonic?
 
@@ -269,8 +266,7 @@ const id2 = ulid(); // 01HGW4Z6C8ABCDEFGHIJKLMNPQ  ✅ Always > id1
 - **Thread Safety**: Thread-local storage per thread, no locks or mutexes needed
 - **Random Generation** (with automatic fallback):
   - iOS: `SecRandomCopyBytes` (Security Framework)
-  - Android: `syscall(__NR_getrandom)` → `/dev/urandom` fallback (API 21+)
-  - Linux: `getrandom()` syscall → `/dev/urandom` fallback
+  - Android: getrandom when available, falls back to /dev/urandom
   - Last resort: `std::random_device` (other platforms)
 - **Encoding**: Crockford's Base32 (0-9, A-Z excluding I, L, O, U)
 - **Memory**: Minimal allocation, optimized for mobile devices
@@ -287,7 +283,6 @@ const id2 = ulid(); // 01HGW4Z6C8ABCDEFGHIJKLMNPQ  ✅ Always > id1
 | Implementation | C++ / JSI | JavaScript |
 | Monotonic | ✅ Thread-local | ⚠️ Varies by package |
 | Architecture Support | New + Old | N/A |
-| Thread Safe | ✅ Yes | ⚠️ Depends |
 | Secure Random | ✅ Platform native | ⚠️ JS Math.random or crypto |
 | Bundle Impact | Native only (0 KB JS) | +5-10 KB bundle |
 | Dependencies | Zero | Varies |
