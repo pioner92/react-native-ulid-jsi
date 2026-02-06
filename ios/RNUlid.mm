@@ -8,7 +8,7 @@
 using namespace facebook;
 
 @implementation RNUlid
-RCT_EXPORT_MODULE(ulid)
+RCT_EXPORT_MODULE(RNUlid)
 
 @synthesize bridge = _bridge;
 @synthesize methodQueue = _methodQueue;
