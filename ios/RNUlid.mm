@@ -18,7 +18,7 @@ RCT_EXPORT_MODULE(RNUlid)
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install){
-	NSLog(@"Installing JSI bindings for react-native-ulid ...");
+	NSLog(@"Installing JSI bindings for react-native-ulid-jsi ...");
 	RCTBridge* bridge = [RCTBridge currentBridge];
 	RCTCxxBridge* cxxBridge = (RCTCxxBridge*)bridge;
 

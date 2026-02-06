@@ -12,7 +12,7 @@ if(!RNUlidInitialized){
   if(NativeModules.RNUlid){
     NativeModules.RNUlid.install();
     RNUlidInitialized = globalThis.__getUlid;
-    console.log('✅ react-native-ulid initialized successfully')
+    console.log('✅ react-native-ulid-jsi initialized successfully')
   }
 }
 
